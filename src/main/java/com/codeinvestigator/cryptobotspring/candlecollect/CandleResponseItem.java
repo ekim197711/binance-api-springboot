@@ -2,6 +2,7 @@ package com.codeinvestigator.cryptobotspring.candlecollect;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,9 +15,11 @@ import java.util.List;
 @Data
 public class CandleResponseItem {
 
-    public static CandleResponseItem fromArray(List<Object> fields){
+    public static CandleResponseItem fromArray(List<Object> fields, Symbol symbol, Interval interval){
         int i = 0;
         return CandleResponseItem.builder()
+                .symbol(symbol)
+                .interval(interval)
                 .openTime((Long)fields.get(i++))
                 .open(new BigDecimal(fields.get(i++).toString()))
                 .high(new BigDecimal(fields.get(i++).toString()))
@@ -31,6 +34,11 @@ public class CandleResponseItem {
                 .Ignore(new BigDecimal(fields.get(i).toString()))
                 .build();
     }
+
+    @Id
+    private String _id;
+    private Symbol symbol;
+    private Interval interval;
 
     private Long openTime;
     private BigDecimal open;
