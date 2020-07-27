@@ -8,8 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 public class CandleCollectServiceTest {
 
@@ -26,7 +24,7 @@ public class CandleCollectServiceTest {
         Assertions.assertTrue(candleResponseItems.size() > 0);
 //        System.out.println(candleResponseItems);
         candleResponseItems.forEach(e ->{
-            System.out.println(e.simplePrint());
+            System.out.println(e.simpleToString());
         });
     }
 }

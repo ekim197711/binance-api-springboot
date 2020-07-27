@@ -68,7 +68,7 @@ public class CandleResponseItem {
         return close.subtract(open).divide(open,20, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
 
-    public String simplePrint(){
+    public String simpleToString(){
         return String.format("%s - %s volume: %s diff: %s "
                 , openDateTime()
                 , closeDateTime()

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -23,44 +24,58 @@ import java.util.stream.Collectors;
 public class CandleCollectService {
     private final CandleCollectConfiguration candleCollectConfiguration;
     private final CandleResponseItemRepository repository;
-    public void mineData(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval){
+
+    public void mineData(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval) {
+        log.info("Mine data for: {} to: {} for {} with interval: {}", begin, end, symbol, interval);
+        repository.deleteWithinTime(symbol,
+                interval,
+                begin.toInstant(ZoneOffset.UTC).toEpochMilli(),
+                end.toInstant(ZoneOffset.UTC).toEpochMilli());
         LocalDateTime current = begin.minusDays(0);
-        while (current.isBefore(end)){
+        while (current.isBefore(end)) {
+
             List<CandleResponseItem> items = extractCandles(current, current.plusDays(1), symbol, interval);
             repository.saveAll(items);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            current = current.plusDays(1);
         }
     }
 
-    @SuppressWarnings(value="")
-    public List<CandleResponseItem>  extractCandles(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval) {
-
+    public List<CandleResponseItem> extractCandles(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval) {
+        log.info("Extract candles: {} to {} symbol {} interval {}", begin,end,symbol,interval);
         RestTemplate rt = new RestTemplate();
         URI url = UriComponentsBuilder.fromHttpUrl(candleCollectConfiguration.getCandleUrlPrefix()
                 + candleCollectConfiguration.getCandleUrl())
                 .queryParam(candleCollectConfiguration.getCandleUrlQueryStartTime()
-                        , begin.toEpochSecond(ZoneOffset.UTC)*1000)
+                        , begin.toEpochSecond(ZoneOffset.UTC) * 1000)
                 .queryParam(candleCollectConfiguration.getCandleUrlQuerySymbol(),
                         symbol.getCode())
                 .queryParam(candleCollectConfiguration.getCandleUrlQueryInterval(),
                         interval.getCode())
-                .queryParam(candleCollectConfiguration.getCandleUrlQueryLimit(),1000)
+                .queryParam(candleCollectConfiguration.getCandleUrlQueryLimit(), 1000)
                 .queryParam(candleCollectConfiguration.getCandleUrlQueryEndTime(),
-                        end.toEpochSecond(ZoneOffset.UTC)*1000)
+                        end.toEpochSecond(ZoneOffset.UTC) * 1000)
                 .build().toUri();
 
-        log.info("Url: {}",url);
+        log.debug("Url: {}", url);
         ResponseEntity<List<List<Object>>> exchange = rt.exchange(new RequestEntity<>(HttpMethod.GET, url),
                 new ParameterizedTypeReference<>() {
                 });
         List<List<Object>> response = exchange.getBody();
 
-        if (response == null){
+        if (response == null) {
             log.warn("No response from service!");
             return new ArrayList<>();
         }
 
-        return response.stream()
-                .map(CandleResponseItem::fromArray)
+        List<CandleResponseItem> collect = response.stream()
+                .map(l -> CandleResponseItem.fromArray(l, symbol, interval))
                 .collect(Collectors.toList());
+        log.info("items extracted: {}", collect.size());
+        return collect;
     }
 }
