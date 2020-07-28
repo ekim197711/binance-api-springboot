@@ -11,11 +11,11 @@ import org.springframework.data.domain.Sort;
 public class WalkThroughDataTest {
 
     @Autowired
-    CandleResponseItemRepository candleResponseItemRepository;
+    CandleItemRepository candleItemRepository;
 
     @Test
     public void gothroughLTC15Min(){
-        Page<CandleResponseItem> items = candleResponseItemRepository.findBySymbolAndIntervalOrderByOpenTime(
+        Page<CandleItem> items = candleItemRepository.findBySymbolAndIntervalOrderByOpenTime(
                 Symbol.LTCUSDT,
                 Interval.FIFTEEN_MIN,
                 PageRequest.of(0, 99999, Sort.by(Sort.Direction.ASC, "openTime")));

@@ -9,20 +9,19 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.TemporalField;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Tag("dangerous")
-public class CandleResponseItemRepositoryTest {
+public class CandleItemRepositoryTest {
 
     @Autowired
-    CandleResponseItemRepository repository;
+    CandleItemRepository repository;
 
-    private CandleResponseItem createTestData(Symbol symbol, Interval interval) {
-        return CandleResponseItem
+    private CandleItem createTestData(Symbol symbol, Interval interval) {
+        return CandleItem
                 .builder()
                 .numberOfTrades(new BigInteger("20"))
                 .close(BigDecimal.TEN)
@@ -41,12 +40,12 @@ public class CandleResponseItemRepositoryTest {
     @Test
     public void testcreateAndDeleteTimeRange() {
         repository.deleteAll();
-        CandleResponseItem testData1 = createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN);
+        CandleItem testData1 = createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN);
         testData1.setOpenTime(
                 LocalDateTime.of(2020, 2, 1, 0, 0)
                         .toInstant(ZoneOffset.UTC).toEpochMilli());
 
-        CandleResponseItem testData2 = createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN);
+        CandleItem testData2 = createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN);
         testData2.setOpenTime(
                 LocalDateTime.of(2020, 2, 2, 0, 0)
                         .toInstant(ZoneOffset.UTC).toEpochMilli());
@@ -62,7 +61,7 @@ public class CandleResponseItemRepositoryTest {
                 ,LocalDateTime.of(2020, 2, 2, 0, 0)
                         .toInstant(ZoneOffset.UTC).toEpochMilli());
         assertEquals(1, repository.count());
-        List<CandleResponseItem> all = repository.findAll();
+        List<CandleItem> all = repository.findAll();
         System.out.println(all);
     }
 
@@ -77,7 +76,7 @@ public class CandleResponseItemRepositoryTest {
         assertEquals(5, repository.count());
         repository.deleteBySymbolAndInterval(Symbol.LTCUSDT, Interval.FIFTEEN_MIN);
         assertEquals(2, repository.count());
-        List<CandleResponseItem> all = repository.findAll();
+        List<CandleItem> all = repository.findAll();
         System.out.println(all);
     }
 }

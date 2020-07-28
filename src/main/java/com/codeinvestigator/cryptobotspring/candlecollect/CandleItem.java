@@ -13,11 +13,11 @@ import java.util.List;
 
 @Builder
 @Data
-public class CandleResponseItem {
+public class CandleItem {
 
-    public static CandleResponseItem fromArray(List<Object> fields, Symbol symbol, Interval interval){
+    public static CandleItem fromArray(List<Object> fields, Symbol symbol, Interval interval){
         int i = 0;
-        return CandleResponseItem.builder()
+        return CandleItem.builder()
                 .symbol(symbol)
                 .interval(interval)
                 .openTime((Long)fields.get(i++))

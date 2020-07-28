@@ -18,12 +18,12 @@ public class CandleCollectServiceTest {
     public void extractCandles() {
         LocalDateTime start = LocalDateTime.of(2020,6,1,0,0);
         LocalDateTime end = start.plusDays(1).minusNanos(1);
-        List<CandleResponseItem> candleResponseItems = candleCollectService.extractCandles(start, end,
+        List<CandleItem> candleItems = candleCollectService.extractCandles(start, end,
                 Symbol.LTCUSDT,
                 Interval.FIFTEEN_MIN);
-        Assertions.assertTrue(candleResponseItems.size() > 0);
+        Assertions.assertTrue(candleItems.size() > 0);
 //        System.out.println(candleResponseItems);
-        candleResponseItems.forEach(e ->{
+        candleItems.forEach(e ->{
             System.out.println(e.simpleToString());
         });
     }
