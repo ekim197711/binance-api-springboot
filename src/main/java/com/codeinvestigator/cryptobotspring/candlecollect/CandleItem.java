@@ -68,6 +68,13 @@ public class CandleItem {
         return close.subtract(open).divide(open,20, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
 
+    public BigDecimal gain(){
+        return BigDecimal.valueOf(Math.max(difference().doubleValue(), 0));
+    }
+    public BigDecimal loose(){
+        return BigDecimal.valueOf(Math.min(difference().doubleValue(), 0));
+    }
+
     public String simpleToString(){
         return String.format("%s - %s volume: %s diff: %s "
                 , openDateTime()
