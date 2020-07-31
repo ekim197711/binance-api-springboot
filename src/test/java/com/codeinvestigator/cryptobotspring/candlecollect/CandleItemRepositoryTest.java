@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@Tag("dangerous")
+//@Tag("dangerous")
 public class CandleItemRepositoryTest {
 
     @Autowired
@@ -78,5 +78,17 @@ public class CandleItemRepositoryTest {
         assertEquals(2, repository.count());
         List<CandleItem> all = repository.findAll();
         System.out.println(all);
+    }
+    
+    @Test
+    public void testMany() {
+        repository.deleteAll();
+        repository.saveAll(List.of(
+                createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN),
+        createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN),
+        createTestData(Symbol.LTCUSDT, Interval.FIFTEEN_MIN),
+        createTestData(Symbol.BTCUSDT, Interval.FIFTEEN_MIN),
+        createTestData(Symbol.LTCUSDT, Interval.FOUR_HOUR)));
+        assertEquals(5, repository.count());
     }
 }

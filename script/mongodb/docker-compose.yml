@@ -2,5 +2,9 @@ version: "3"
 services:
   mymongo:
     image: "mongo:latest"
+    volumes:
+    - "mongodbbinance:/data/db"
     ports:
       - 27017:27017
+volumes:
+  mongodbbinance:

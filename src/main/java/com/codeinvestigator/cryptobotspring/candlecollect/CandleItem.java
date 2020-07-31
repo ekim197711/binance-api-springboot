@@ -1,6 +1,6 @@
 package com.codeinvestigator.cryptobotspring.candlecollect;
 
-import com.codeinvestigator.cryptobotspring.candlecollect.simulator.Indicators;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicators;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -54,6 +54,11 @@ public class CandleItem {
     private BigDecimal takerBuyQuoteAssetVolume;
     private BigDecimal Ignore;
     private Indicators indicators;
+    private boolean indicatorCalculated;
+    {
+        indicatorCalculated = false;
+        indicators = new Indicators();
+    }
     public LocalDateTime openDateTime(){
         return LocalDateTime.ofEpochSecond(openTime/1000, (int)(openTime%1000), ZoneOffset.UTC);
     }
@@ -67,14 +72,14 @@ public class CandleItem {
     }
 
     public BigDecimal differencePercentage(){
-        return close.subtract(open).divide(open,20, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+        return close.subtract(open).divide(open,6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
     }
 
     public BigDecimal gain(){
-        return BigDecimal.valueOf(Math.max(difference().doubleValue(), 0));
+        return BigDecimal.valueOf(Math.max(difference().doubleValue(), 0.0d));
     }
     public BigDecimal loose(){
-        return BigDecimal.valueOf(Math.min(difference().doubleValue(), 0));
+        return BigDecimal.valueOf(Math.min(difference().doubleValue(), 0.0d));
     }
 
     public String simpleToString(){
@@ -86,4 +91,7 @@ public class CandleItem {
     }
 
 
+    public String indicatorString() {
+        return simpleToString() + " indicators " + getIndicators();
+    }
 }

@@ -4,6 +4,7 @@ import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItemRepository;
 import com.codeinvestigator.cryptobotspring.candlecollect.Interval;
 import com.codeinvestigator.cryptobotspring.candlecollect.Symbol;
+import com.codeinvestigator.cryptobotspring.candlecollect.simulator.strategy.HistoricTraderStrategy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

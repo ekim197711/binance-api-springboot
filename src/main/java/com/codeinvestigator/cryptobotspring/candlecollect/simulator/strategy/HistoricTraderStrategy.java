@@ -1,11 +1,13 @@
-package com.codeinvestigator.cryptobotspring.candlecollect.simulator;
+package com.codeinvestigator.cryptobotspring.candlecollect.simulator.strategy;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicators;
+import com.codeinvestigator.cryptobotspring.candlecollect.simulator.Position;
+import com.codeinvestigator.cryptobotspring.candlecollect.simulator.TradeAction;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package com.codeinvestigator.cryptobotspring.candlecollect;
 
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.IndicatorForExistingCandlesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 public class CandleCollectService {
     private final CandleCollectConfiguration candleCollectConfiguration;
     private final CandleItemRepository repository;
+    private final IndicatorForExistingCandlesService indicatorForExistingCandlesService;
+    private static final int CHUNK_MAX = 1000;
 
     public void mineData(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval) {
         log.info("Mine data for: {} to: {} for {} with interval: {}", begin, end, symbol, interval);
@@ -30,18 +33,28 @@ public class CandleCollectService {
                 interval,
                 begin.toInstant(ZoneOffset.UTC).toEpochMilli(),
                 end.toInstant(ZoneOffset.UTC).toEpochMilli());
-        LocalDateTime current = begin.minusDays(0);
-        while (current.isBefore(end)) {
-            List<CandleItem> items = extractCandles(current, current.plusDays(1), symbol, interval);
+        LocalDateTime currentBegin = begin.minusDays(0);
+
+        int daysAtATime = Double.valueOf(Math.floor(CHUNK_MAX / interval.chunksPerDay())).intValue();
+
+        while (currentBegin.isBefore(end)) {
+            LocalDateTime currentEnd = currentBegin.plusDays(daysAtATime);
+            if (currentEnd.isAfter(end))
+                currentEnd = end.plusDays(0);
+            List<CandleItem> items = extractCandles(currentBegin, currentEnd, symbol, interval);
             repository.saveAll(items);
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            current = current.plusDays(1);
+            currentBegin = currentBegin.plusDays(daysAtATime);
         }
+//        repository.
+//        indicatorForExistingCandlesService.calcIndicatorsFromDB(symbol, interval);
     }
+
+
 
     public List<CandleItem> extractCandles(LocalDateTime begin, LocalDateTime end, Symbol symbol, Interval interval) {
         log.info("Extract candles: {} to {} symbol {} interval {}", begin,end,symbol,interval);
@@ -54,7 +67,7 @@ public class CandleCollectService {
                         symbol.getCode())
                 .queryParam(candleCollectConfiguration.getCandleUrlQueryInterval(),
                         interval.getCode())
-                .queryParam(candleCollectConfiguration.getCandleUrlQueryLimit(), 1000)
+                .queryParam(candleCollectConfiguration.getCandleUrlQueryLimit(), CHUNK_MAX)
                 .queryParam(candleCollectConfiguration.getCandleUrlQueryEndTime(),
                         end.toEpochSecond(ZoneOffset.UTC) * 1000)
                 .build().toUri();

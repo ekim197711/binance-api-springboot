@@ -16,13 +16,19 @@ public class MineDataTest {
     @Autowired
     CandleCollectService candleCollectService;
 
+    @Autowired
+    CandleItemRepository repository;
+
     @Test
-    public void mine15MinJune2020(){
+    public void mine2020() {
+        Symbol symbol = Symbol.LTCUSDT;
+        Interval interval = Interval.ONE_HOUR;
         candleCollectService.mineData(
-                LocalDateTime.of(2020,6,1,0,0),
-                LocalDateTime.of(2020,7,1,0,0),
-                Symbol.LTCUSDT,
-                Interval.FIFTEEN_MIN
-        );
+                LocalDateTime.of(2020, 6, 1, 0, 0),
+                LocalDateTime.of(2020, 7, 30, 12, 0),
+                symbol, interval
+                );
     }
+
+
 }

@@ -1,6 +1,8 @@
 package com.codeinvestigator.cryptobotspring.candlecollect.simulator;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicators;
+import com.codeinvestigator.cryptobotspring.candlecollect.simulator.strategy.HistoricTraderStrategy;
 
 import java.util.List;
 
