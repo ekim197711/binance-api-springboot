@@ -1,7 +1,7 @@
 package com.codeinvestigator.cryptobotspring.candlecollect.simulator.strategy;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
-import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicators;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator;
 import com.codeinvestigator.cryptobotspring.candlecollect.simulator.Position;
 import com.codeinvestigator.cryptobotspring.candlecollect.simulator.TradeAction;
 import lombok.Getter;
@@ -18,7 +18,7 @@ public abstract class HistoricTraderStrategy {
     private BigDecimal bankroll = BigDecimal.valueOf(1000);
     @Getter
     private TradeAction tradeAction;
-    public abstract void giveInfo(Indicators indicators, List<CandleItem> history);
+    public abstract void giveInfo(Indicator indicator, List<CandleItem> history);
 
     void buy(CandleItem item){
         if (position != null){

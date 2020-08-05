@@ -29,7 +29,7 @@ public class IndicatorForExistingCandlesService {
         for (int i = 1; i < candles.size(); i++) {
             CandleItem candleItem = candles.get(i);
             List<CandleItem> history = candles.subList(0, i);
-            candleItem.setIndicators(new Indicators().calculate(history, candleItem));
+            candleItem.setIndicator(Indicator.calculate(history, candleItem));
             candleItem.setIndicatorCalculated(true);
         }
         List<CandleItem> candleItems = repository.saveAll(candles);

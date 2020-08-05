@@ -40,13 +40,13 @@ public class IndicatorForExistingCandlesServiceTest {
         List<CandleItem> candleItems = indicatorForExistingCandlesService.calcIndicators(withinTime);
         CandleItem candleItem = candleItems.get(candleItems.size() - 20);
         List<CandleItem> history = candleItems.subList(0, candleItems.size() - 20);
-        candleItem.getIndicators().calculate(history, candleItem);
+        candleItem.getIndicator().calculate(history, candleItem);
 
         String s = candleItem.simpleToString();
         System.out.println("CANDLEITEM CHECK " + s);
-        candleItem.getIndicators().nicePrintMovingAverages();
-        candleItem.getIndicators().nicePrintExpAverages();
-        candleItem.getIndicators().nicePrintMacdATR();
+        candleItem.getIndicator().nicePrintMovingAverages();
+        candleItem.getIndicator().nicePrintExpAverages();
+        candleItem.getIndicator().nicePrintMacdATR();
 
     }
 }
