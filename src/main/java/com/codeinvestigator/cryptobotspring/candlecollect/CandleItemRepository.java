@@ -46,7 +46,7 @@ public interface CandleItemRepository extends MongoRepository<CandleItem, String
             "{" +
             "'symbol': {$eq: ?0}," +
             "'interval': {$eq: ?1}" +
-            "}", delete = true, sort = "{'openTime': 1}"
+            "}", delete = false, sort = "{'openTime': 1}"
     )
     List<CandleItem> findAllForSymbolAndInterval(
             Symbol symbol

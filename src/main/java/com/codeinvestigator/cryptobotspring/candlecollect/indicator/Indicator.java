@@ -44,6 +44,8 @@ public class Indicator {
 
         CandleItem itemPrev = null;
         itemPrev = history.get(history.size() - 1);
+
+
         ni.movingAverages = new AverageComputation().calculateMovingAverages(ni.movingAverages,history);
         ni.exponentialMovingAverages = new AverageComputation().calculateExponentialMovingAverages(ni.exponentialMovingAverages,
                 history, item, itemPrev);
@@ -52,7 +54,7 @@ public class Indicator {
         ni.rsi = new RelativeStrengthComputation().calculateRelativeStrengthIndex(history, ni.rs);
         ni.trueRange = new TrueRangeComputation().calculateTrueRange(item, itemPrev);
         ni.averageTrueRange = new TrueRangeComputation().calculateAverageTrueRange(item, itemPrev, history);
-        log.info("Calculated indicators: {}", ni);
+//        log.info("Calculated indicators: {}", ni);
         return ni;
     }
 

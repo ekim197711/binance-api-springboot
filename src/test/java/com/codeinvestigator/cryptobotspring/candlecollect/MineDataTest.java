@@ -1,5 +1,7 @@
 package com.codeinvestigator.cryptobotspring.candlecollect;
 
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.IndicatorForExistingCandlesService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,9 @@ import java.util.List;
 @SpringBootTest
 //@Tag("integration")
 public class MineDataTest {
+
+    @Autowired
+    IndicatorForExistingCandlesService indicatorForExistingCandlesService;
 
     @Autowired
     CandleCollectService candleCollectService;
@@ -28,6 +33,7 @@ public class MineDataTest {
                 LocalDateTime.of(2020, 7, 30, 12, 0),
                 symbol, interval
                 );
+        List<CandleItem> candleItems = indicatorForExistingCandlesService.calcIndicators(repository.findAllForSymbolAndInterval(symbol,interval));
     }
 
 

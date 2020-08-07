@@ -33,6 +33,7 @@ public class CandleItem {
                 .takerBuyBaseAssetVolume(new BigDecimal(fields.get(i++).toString()))
                 .takerBuyQuoteAssetVolume(new BigDecimal(fields.get(i++).toString()))
                 .Ignore(new BigDecimal(fields.get(i).toString()))
+                .indicator(new Indicator())
                 .build();
     }
 
@@ -72,7 +73,7 @@ public class CandleItem {
     }
 
     public BigDecimal differencePercentage(){
-        return close.subtract(open).divide(open,6, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100));
+        return close.subtract(open).divide(open,6, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
     }
 
     public BigDecimal gain(){

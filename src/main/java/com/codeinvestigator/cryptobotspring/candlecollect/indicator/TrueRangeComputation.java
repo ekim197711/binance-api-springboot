@@ -28,7 +28,7 @@ public class TrueRangeComputation {
                     .multiply(new BigDecimal("13"))
                     .add(item.getIndicator().getTrueRange())
                     .divide(new BigDecimal("14"), Indicator.BD_SCALE, RoundingMode.HALF_UP);
-            log.info("ATR! {}", atr);
+//            log.info("ATR! {}", atr);
             return atr;
         }
     }

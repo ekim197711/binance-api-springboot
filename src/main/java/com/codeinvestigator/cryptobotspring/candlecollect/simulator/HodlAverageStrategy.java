@@ -8,7 +8,7 @@ import java.util.List;
 
 public class HodlAverageStrategy extends HistoricTraderStrategy {
     @Override
-    public void giveInfo(Indicator indicator, List<CandleItem> history) {
+    public void giveInfo(CandleItem ci) {
 
     }
 }

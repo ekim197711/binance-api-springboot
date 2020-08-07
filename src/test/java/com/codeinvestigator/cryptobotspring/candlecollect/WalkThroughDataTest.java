@@ -1,5 +1,6 @@
 package com.codeinvestigator.cryptobotspring.candlecollect;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -7,7 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 public class WalkThroughDataTest {
@@ -34,5 +37,12 @@ public class WalkThroughDataTest {
         allForSymbolAndInterval.forEach(i ->{
             System.out.println(i.indicatorString());
         });
+        CandleItem ciTest = allForSymbolAndInterval.stream().filter(i -> i.openDateTime().isEqual(LocalDateTime.of(2020, 7, 29, 5, 0)))
+                .collect(Collectors.toList()).get(0);
+        System.out.println("RSI: " + ciTest.getIndicator().getRsi());
+        System.out.println("Indicators: " + ciTest.getIndicator());
+        System.out.println("candle: " + ciTest.simpleToString());
+        Assertions.assertTrue(ciTest.getIndicator().getRsi().doubleValue() > 59.0);
+        Assertions.assertTrue(ciTest.getIndicator().getRsi().doubleValue() < 60.0);
     }
 }

@@ -18,7 +18,7 @@ public abstract class HistoricTraderStrategy {
     private BigDecimal bankroll = BigDecimal.valueOf(1000);
     @Getter
     private TradeAction tradeAction;
-    public abstract void giveInfo(Indicator indicator, List<CandleItem> history);
+    public abstract void giveInfo(CandleItem candleItem);
 
     void buy(CandleItem item){
         if (position != null){
