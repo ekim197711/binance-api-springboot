@@ -29,7 +29,7 @@ public class IndicatorForExistingCandlesServiceTest {
     }
 
     @Test
-    public void tryMovingAverage(){
+    public void calculateIndicators(){
         List<CandleItem> withinTime = repository.findWithinTime(Symbol.LTCUSDT, Interval.ONE_HOUR,
                 LocalDateTime.of(2020, 6, 2, 0, 0)
                         .toInstant(ZoneOffset.UTC).toEpochMilli(),
@@ -38,6 +38,9 @@ public class IndicatorForExistingCandlesServiceTest {
         );
         System.out.println("Calc items now: " + withinTime.size());
         List<CandleItem> candleItems = indicatorForExistingCandlesService.calcIndicators(withinTime);
+
+
+        int prevIndex
         CandleItem candleItem = candleItems.get(candleItems.size() - 20);
         List<CandleItem> history = candleItems.subList(0, candleItems.size() - 20);
         candleItem.getIndicator().calculate(history, candleItem);

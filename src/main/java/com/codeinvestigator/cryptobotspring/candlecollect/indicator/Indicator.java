@@ -16,8 +16,8 @@ import java.util.Map;
 @NoArgsConstructor
 public class Indicator {
     public static final int BD_SCALE = 6;
-    private BigDecimal rsi = BigDecimal.valueOf(-1, BD_SCALE);
-    private BigDecimal rs = BigDecimal.valueOf(-1, BD_SCALE);
+
+    private RSIIndicator rsiIndicator;
     private Map<Integer, BigDecimal> movingAverages = new HashMap<>(Map.of(
             7, BigDecimal.valueOf(0),
             12, BigDecimal.valueOf(0),
