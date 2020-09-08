@@ -9,7 +9,7 @@ import java.util.List;
 
 @Slf4j
 public class TrueRangeComputation {
-    public BigDecimal calculateAverageTrueRange(CandleItem item, CandleItem itemPrev, List<CandleItem> history) {
+    public BigDecimal calculateAverageTrueRange(Indicator item, Indicator itemPrev, List<CandleItem> history) {
         if (history.size() < 14)
             return BigDecimal.ZERO;
         else if (history.size() == 14) {
@@ -23,10 +23,10 @@ public class TrueRangeComputation {
             return atr;
         } else {
 //            Current ATR = [(Prior ATR x 13) + Current TR] / 14
-            BigDecimal atr= itemPrev.getIndicator()
+            BigDecimal atr= itemPrev
                     .getAverageTrueRange()
                     .multiply(new BigDecimal("13"))
-                    .add(item.getIndicator().getTrueRange())
+                    .add(item.getTrueRange())
                     .divide(new BigDecimal("14"), Indicator.BD_SCALE, RoundingMode.HALF_UP);
 //            log.info("ATR! {}", atr);
             return atr;

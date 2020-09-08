@@ -29,8 +29,8 @@ public class MineDataTest {
         Symbol symbol = Symbol.LTCUSDT;
         Interval interval = Interval.ONE_HOUR;
         candleCollectService.mineData(
-                LocalDateTime.of(2020, 6, 1, 0, 0),
-                LocalDateTime.of(2020, 7, 30, 12, 0),
+                LocalDateTime.of(2020, 4, 1, 0, 0),
+                LocalDateTime.of(2020, 9, 8, 0, 0),
                 symbol, interval
                 );
         List<CandleItem> candleItems = indicatorForExistingCandlesService.calcIndicators(repository.findAllForSymbolAndInterval(symbol,interval));

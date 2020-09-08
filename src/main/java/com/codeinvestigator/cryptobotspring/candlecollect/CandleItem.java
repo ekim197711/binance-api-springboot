@@ -1,8 +1,10 @@
 package com.codeinvestigator.cryptobotspring.candlecollect;
 
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Constants;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator;
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 
 import java.math.BigDecimal;
@@ -14,11 +16,12 @@ import java.util.List;
 
 @Builder
 @Data
+@Slf4j
 public class CandleItem {
 
     public static CandleItem fromArray(List<Object> fields, Symbol symbol, Interval interval){
         int i = 0;
-        return CandleItem.builder()
+        CandleItem ci = CandleItem.builder()
                 .symbol(symbol)
                 .interval(interval)
                 .openTime((Long)fields.get(i++))
@@ -35,6 +38,8 @@ public class CandleItem {
                 .Ignore(new BigDecimal(fields.get(i).toString()))
                 .indicator(new Indicator())
                 .build();
+
+        return ci;
     }
 
     @Id
@@ -79,8 +84,14 @@ public class CandleItem {
     public BigDecimal gain(){
         return BigDecimal.valueOf(Math.max(difference().doubleValue(), 0.0d));
     }
+    public BigDecimal gainRelative(){
+        return gain().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE);
+    }
+    public BigDecimal looseRelative(){
+        return loose().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE);
+    }
     public BigDecimal loose(){
-        return BigDecimal.valueOf(Math.min(difference().doubleValue(), 0.0d));
+        return BigDecimal.valueOf(Math.abs(Math.min(difference().doubleValue(), 0.0d)));
     }
 
     public String simpleToString(){
@@ -90,8 +101,17 @@ public class CandleItem {
                 , volume
                 , differencePercentage());
     }
+    public String simpleDateTimeToString(){
+        return String.format("%s - %s volume: %s diff: %s "
+                , openDateTime()
+                , closeDateTime()
+                , volume
+                , differencePercentage());
+    }
 
-
+    public void printRSI() {
+        log.info(simpleDateTimeToString() + " - RSI: " + getIndicator().getRsiIndicator());
+    }
     public String indicatorString() {
         return simpleToString() + " indicators " + this.getIndicator();
     }

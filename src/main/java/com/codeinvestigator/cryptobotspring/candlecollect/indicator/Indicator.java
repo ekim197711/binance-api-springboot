@@ -1,8 +1,11 @@
 package com.codeinvestigator.cryptobotspring.candlecollect.indicator;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.rsi.RelativeStrengthComputation;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
@@ -15,8 +18,8 @@ import java.util.Map;
 @Slf4j
 @NoArgsConstructor
 public class Indicator {
-    public static final int BD_SCALE = 6;
 
+    public static final int BD_SCALE = 6;
     private RSIIndicator rsiIndicator;
     private Map<Integer, BigDecimal> movingAverages = new HashMap<>(Map.of(
             7, BigDecimal.valueOf(0),
@@ -50,10 +53,12 @@ public class Indicator {
         ni.exponentialMovingAverages = new AverageComputation().calculateExponentialMovingAverages(ni.exponentialMovingAverages,
                 history, item, itemPrev);
         ni.movingAverageConvergenceDivergence = new AverageComputation().calculateMovingAverageConvergenceDivergence(ni.exponentialMovingAverages);
-        ni.rs = new RelativeStrengthComputation().calculateRelativeStrength(history);
-        ni.rsi = new RelativeStrengthComputation().calculateRelativeStrengthIndex(history, ni.rs);
+//        ni.rs = new RelativeStrengthComputation().calculateRelativeStrength(history);
+//        ni.rsi = new RelativeStrengthComputation().calculateRelativeStrengthIndex(history, ni.rs);
         ni.trueRange = new TrueRangeComputation().calculateTrueRange(item, itemPrev);
-        ni.averageTrueRange = new TrueRangeComputation().calculateAverageTrueRange(item, itemPrev, history);
+        ni.averageTrueRange = new TrueRangeComputation().calculateAverageTrueRange(ni, itemPrev.getIndicator(), history);
+
+        ni.setRsiIndicator(new RelativeStrengthComputation(history, item).calculate());
 //        log.info("Calculated indicators: {}", ni);
         return ni;
     }
@@ -89,6 +94,8 @@ public class Indicator {
 
         log.info("Macd: {}", df.format(getMovingAverageConvergenceDivergence().doubleValue()));
         log.info("AverageTrueRange: {}", df.format(getAverageTrueRange().doubleValue()));
-        log.info("RSI: {}", df.format(getRsi().doubleValue()));
+//        log.info("RSI: {}", df.format(getRsi().doubleValue()));
     }
+
+
 }

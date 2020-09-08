@@ -26,6 +26,8 @@ public class IndicatorForExistingCandlesService {
     }
 
     public List<CandleItem>  calcIndicators(List<CandleItem> candles) {
+        candles.get(0).setIndicator(new Indicator());
+
         for (int i = 1; i < candles.size(); i++) {
             CandleItem candleItem = candles.get(i);
             List<CandleItem> history = candles.subList(0, i);
