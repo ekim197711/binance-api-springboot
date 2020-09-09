@@ -87,8 +87,14 @@ public class CandleItem {
     public BigDecimal gainRelative(){
         return gain().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE);
     }
+    public BigDecimal gainRelativePercentage(){
+        return gain().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE).multiply(BigDecimal.valueOf(100));
+    }
     public BigDecimal looseRelative(){
         return loose().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE);
+    }
+    public BigDecimal looseRelativePercentage(){
+        return loose().divide(open, Constants.BD_SCALE, Constants.ROUNDING_MODE).multiply(BigDecimal.valueOf(100));
     }
     public BigDecimal loose(){
         return BigDecimal.valueOf(Math.abs(Math.min(difference().doubleValue(), 0.0d)));

@@ -20,4 +20,6 @@ import static com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indic
 public class RSIIndicator {
     private BigDecimal rsi;
     private RSIState rsiState;
+    private BigDecimal avgGain;
+    private BigDecimal avgLoose;
 }

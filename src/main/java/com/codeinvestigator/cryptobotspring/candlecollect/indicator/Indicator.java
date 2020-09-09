@@ -1,18 +1,17 @@
 package com.codeinvestigator.cryptobotspring.candlecollect.indicator;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average.AverageComputation;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average.AverageIndicator;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.rsi.RelativeStrengthComputation;
-import lombok.AllArgsConstructor;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeComputation;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeIndicator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @Slf4j
@@ -21,23 +20,9 @@ public class Indicator {
 
     public static final int BD_SCALE = 6;
     private RSIIndicator rsiIndicator;
-    private Map<Integer, BigDecimal> movingAverages = new HashMap<>(Map.of(
-            7, BigDecimal.valueOf(0),
-            12, BigDecimal.valueOf(0),
-            20, BigDecimal.valueOf(0),
-            26, BigDecimal.valueOf(0),
-            50, BigDecimal.valueOf(0),
-            99, BigDecimal.valueOf(0),
-            200, BigDecimal.valueOf(0))
-    );
-    private Map<Integer, BigDecimal> exponentialMovingAverages = new HashMap<>(Map.of(
-            12, BigDecimal.valueOf(0),
-            26, BigDecimal.valueOf(0)
-    ));
+    private AverageIndicator averageIndicator;
+    private TrueRangeIndicator trueRangeIndicator;
 
-    private BigDecimal trueRange = BigDecimal.valueOf(-1, BD_SCALE);
-    private BigDecimal averageTrueRange = BigDecimal.valueOf(-1, BD_SCALE);
-    private BigDecimal movingAverageConvergenceDivergence = BigDecimal.valueOf(-1, BD_SCALE);
 
 
     public static Indicator calculate(List<CandleItem> history, CandleItem item) {
@@ -48,16 +33,8 @@ public class Indicator {
         CandleItem itemPrev = null;
         itemPrev = history.get(history.size() - 1);
 
-
-        ni.movingAverages = new AverageComputation().calculateMovingAverages(ni.movingAverages,history);
-        ni.exponentialMovingAverages = new AverageComputation().calculateExponentialMovingAverages(ni.exponentialMovingAverages,
-                history, item, itemPrev);
-        ni.movingAverageConvergenceDivergence = new AverageComputation().calculateMovingAverageConvergenceDivergence(ni.exponentialMovingAverages);
-//        ni.rs = new RelativeStrengthComputation().calculateRelativeStrength(history);
-//        ni.rsi = new RelativeStrengthComputation().calculateRelativeStrengthIndex(history, ni.rs);
-        ni.trueRange = new TrueRangeComputation().calculateTrueRange(item, itemPrev);
-        ni.averageTrueRange = new TrueRangeComputation().calculateAverageTrueRange(ni, itemPrev.getIndicator(), history);
-
+        ni.setAverageIndicator(new AverageComputation(history, item, history.get(history.size()-1)).calculate());
+        ni.setTrueRangeIndicator(new TrueRangeComputation(item, itemPrev, history).calculate());
         ni.setRsiIndicator(new RelativeStrengthComputation(history, item).calculate());
 //        log.info("Calculated indicators: {}", ni);
         return ni;
@@ -72,8 +49,8 @@ public class Indicator {
     public void nicePrintMovingAverages() {
         log.info("MA Printout BEGIN ####");
         DecimalFormat df = new DecimalFormat("###,##0.000");
-        for (Integer integer : getMovingAverages().keySet()) {
-            log.info("{}: {}", integer, df.format(getMovingAverages().get(integer).doubleValue()));
+        for (Integer integer : getAverageIndicator().getMovingAverages().keySet()) {
+            log.info("{}: {}", integer, df.format(getAverageIndicator().getMovingAverages().get(integer).doubleValue()));
         }
         log.info("MA Printout END ####");
     }
@@ -81,8 +58,8 @@ public class Indicator {
     public void nicePrintExpAverages() {
         log.info("Exp MA Printout BEGIN ####");
         DecimalFormat df = new DecimalFormat("###,##0.000");
-        for (Integer integer : getExponentialMovingAverages().keySet()) {
-            log.info("{}: {}", integer, df.format(getMovingAverages().get(integer).doubleValue()));
+        for (Integer integer : getAverageIndicator().getExponentialMovingAverages().keySet()) {
+            log.info("{}: {}", integer, df.format(getAverageIndicator().getMovingAverages().get(integer).doubleValue()));
         }
         log.info("Exp MA Printout END ####");
     }
@@ -92,8 +69,8 @@ public class Indicator {
     public void nicePrintMacdATR() {
         DecimalFormat df = new DecimalFormat("###,##0.000");
 
-        log.info("Macd: {}", df.format(getMovingAverageConvergenceDivergence().doubleValue()));
-        log.info("AverageTrueRange: {}", df.format(getAverageTrueRange().doubleValue()));
+        log.info("Macd: {}", df.format(getAverageIndicator().getMovingAverageConvergenceDivergence().doubleValue()));
+        log.info("AverageTrueRange: {}", df.format(getTrueRangeIndicator().getAverageTrueRange().doubleValue()));
 //        log.info("RSI: {}", df.format(getRsi().doubleValue()));
     }
 

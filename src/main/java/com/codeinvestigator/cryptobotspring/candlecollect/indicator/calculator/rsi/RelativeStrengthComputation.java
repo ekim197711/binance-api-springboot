@@ -6,30 +6,19 @@ import com.codeinvestigator.cryptobotspring.candlecollect.indicator.RSIIndicator
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator.BD_SCALE;
 
 @RequiredArgsConstructor
 public class RelativeStrengthComputation {
     private final List<CandleItem> history;
     private final CandleItem current;
+    BigDecimal avgGain = BigDecimal.ZERO;
+    BigDecimal avgLoose = BigDecimal.ZERO;
 
-    Map<Integer, BigDecimal> looses = new HashMap<>();
-    Map<Integer, BigDecimal> gains = new HashMap<>();
-    //    private BigDecimal rsi = BigDecimal.valueOf(-1, BD_SCALE);
-//    private BigDecimal rs = BigDecimal.valueOf(-1, BD_SCALE);
-    private static final int MAX_PERIOD = 14;
+    private CandleItem previousCandle() {
+        return history.get(history.size() - 1);
+    }
 
-    //    {
-//        looses.put(13, BigDecimal.ZERO);
-//        looses.put(14, BigDecimal.ZERO);
-//        gains.put(13, BigDecimal.ZERO);
-//        gains.put(14, BigDecimal.ZERO);
-//    }
     private boolean beforeInitial() {
         return history.size() < 14;
     }
@@ -37,63 +26,59 @@ public class RelativeStrengthComputation {
     private boolean isInitial() {
         return (history.size() == 14);
     }
-
-    public BigDecimal averageGains(int period) {
-        return gains.get(period).divide(new BigDecimal(period));
-    }
-
-    public BigDecimal averageLooses(int period) {
-        return looses.get(period).divide(new BigDecimal(period));
-    }
-
-
     public RSIIndicator calculate() {
         if (beforeInitial())
             return calculateBefore();
-        else if (isInitial())
-            return calculateInitial();
-        else
-            return calculateRealRSI();
+        else if (isInitial()) {
+            avgGainLooseInitialCalc();
+            return calculateRSI();
+        } else {
+            avgGainLooseCalc();
+            return calculateRSI();
+        }
     }
 
     private RSIIndicator calculateBefore() {
-        return new RSIIndicator(BigDecimal.ZERO, RSIState.BEFORE_INITIAL);
+        return new RSIIndicator(BigDecimal.ZERO, RSIState.BEFORE_INITIAL, avgGain, avgLoose);
     }
 
-    private RSIIndicator calculateRealRSI() {
-        BigDecimal gain = current.gain();
-        BigDecimal loose = current.loose();
-        for (int i = 0; i < 13; i++) {
-            CandleItem ci = history.get(history.size() - 1 - i);
-            gain = gain.add(ci.gain());
-            loose = loose.add(ci.loose());
-        }
-        BigDecimal gainDivLoose = gain.divide(loose, Constants.BD_SCALE, Constants.ROUNDING_MODE);
-        BigDecimal rsi =
-                BigDecimal.valueOf(100).subtract(
-                        BigDecimal.valueOf(100).divide(
-                                BigDecimal.valueOf(1).add(
-                                        gainDivLoose
-                                ), Constants.BD_SCALE, Constants.ROUNDING_MODE));
-        return new RSIIndicator(rsi, RSIState.AFTER_INITIAL);
-    }
-
-    private RSIIndicator calculateInitial() {
-        BigDecimal gain = BigDecimal.ZERO;
-        BigDecimal loose = BigDecimal.ZERO;
+    private void avgGainLooseInitialCalc() {
         for (int i = 0; i < 14; i++) {
             CandleItem ci = history.get(history.size() - 1 - i);
-            gain = gain.add(ci.gain().divide(ci.getOpen(), Constants.BD_SCALE, Constants.ROUNDING_MODE));
-            loose = loose.add(ci.loose().divide(ci.getOpen(), Constants.BD_SCALE, Constants.ROUNDING_MODE));
+            avgGain = avgGain.add(ci.gain());
+            avgLoose = avgLoose.add(ci.loose());
         }
+        avgGain = avgGain.divide(BigDecimal.valueOf(14), Constants.MATHCONTEXT);
+        avgLoose = avgLoose.divide(BigDecimal.valueOf(14), Constants.MATHCONTEXT);
+    }
+
+    private void avgGainLooseCalc() {
+
+        avgGain= previousCandle().getIndicator().getRsiIndicator()
+                .getAvgGain()
+                .multiply(BigDecimal.valueOf(13))
+                .add(current.gain())
+                .divide(BigDecimal.valueOf(14), Constants.MATHCONTEXT)
+        ;
+        avgLoose = previousCandle().getIndicator().getRsiIndicator()
+                .getAvgLoose()
+                .multiply(BigDecimal.valueOf(13))
+                .add(current.loose())
+                .divide(BigDecimal.valueOf(14), Constants.MATHCONTEXT)
+        ;
+    }
+
+    private RSIIndicator calculateRSI() {
+        BigDecimal gDivl = avgGain.divide(avgLoose, Constants.MATHCONTEXT);
         BigDecimal rsi =
                 BigDecimal.valueOf(100).subtract(
                         BigDecimal.valueOf(100).divide(
                                 BigDecimal.valueOf(1).add(
-                                        gain.divide(loose, Constants.BD_SCALE, Constants.ROUNDING_MODE)
+                                        gDivl
                                 ), Constants.BD_SCALE, Constants.ROUNDING_MODE));
-        return new RSIIndicator(rsi, RSIState.INITIAL);
+        if (isInitial())
+            return new RSIIndicator(rsi, RSIState.INITIAL, avgGain, avgLoose);
+        else
+            return new RSIIndicator(rsi, RSIState.AFTER_INITIAL, avgGain, avgLoose);
     }
-
-
 }

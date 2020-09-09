@@ -27,11 +27,11 @@ public interface CandleItemRepository extends MongoRepository<CandleItem, String
 
     @Query(value = "" +
             "{" +
-            "'symbol': {$eq: ?0}," +
-            "'interval': {$eq: ?1}," +
-            "'openTime': {$gte: ?2}," +
-            "'openTime': {$lt: ?3} " +
-            "}", delete = false
+            " $and: [ {'symbol': {$eq: ?0}}," +
+            " {'interval': {$eq: ?1}}," +
+            " {'openTime': {$gte: ?2}}," +
+            " {'openTime': {$lt: ?3}} " +
+            "]}", delete = false
     )
     List<CandleItem> findWithinTime(Symbol symbol,
                           Interval interval,
