@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,8 +27,10 @@ public class IndicatorForExistingCandlesService {
     }
 
     public List<CandleItem>  calcIndicators(List<CandleItem> candles) {
-        candles.get(0).setIndicator(new Indicator());
+        if (candles.size() == 0)
+            throw new IllegalArgumentException("No Candleitems in the list... Check db lookup.");
 
+        candles.get(0).setIndicator(Indicator.calculateDummy(candles.get(0)));
         for (int i = 1; i < candles.size(); i++) {
             CandleItem candleItem = candles.get(i);
             List<CandleItem> history = candles.subList(0, i);

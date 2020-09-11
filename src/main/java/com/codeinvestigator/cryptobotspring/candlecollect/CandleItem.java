@@ -36,7 +36,7 @@ public class CandleItem {
                 .takerBuyBaseAssetVolume(new BigDecimal(fields.get(i++).toString()))
                 .takerBuyQuoteAssetVolume(new BigDecimal(fields.get(i++).toString()))
                 .Ignore(new BigDecimal(fields.get(i).toString()))
-                .indicator(new Indicator())
+                .indicator(Indicator.builder().build())
                 .build();
 
         return ci;
@@ -63,7 +63,7 @@ public class CandleItem {
     private boolean indicatorCalculated;
     {
         indicatorCalculated = false;
-        indicator = new Indicator();
+        indicator = Indicator.builder().build();
     }
     public LocalDateTime openDateTime(){
         return LocalDateTime.ofEpochSecond(openTime/1000, (int)(openTime%1000), ZoneOffset.UTC);

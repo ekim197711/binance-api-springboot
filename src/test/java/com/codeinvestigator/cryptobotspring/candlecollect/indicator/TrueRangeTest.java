@@ -14,7 +14,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @SpringBootTest
-public class IndicatorForExistingCandlesServiceTest {
+public class TrueRangeTest {
     @Autowired
     IndicatorForExistingCandlesService indicatorForExistingCandlesService;
 

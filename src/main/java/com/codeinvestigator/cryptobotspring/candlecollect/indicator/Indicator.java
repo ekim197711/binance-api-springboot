@@ -6,6 +6,7 @@ import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.a
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.rsi.RelativeStrengthComputation;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeComputation;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeIndicator;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Data
 @Slf4j
-@NoArgsConstructor
+@Builder
 public class Indicator {
 
     public static final int BD_SCALE = 6;
@@ -24,26 +25,25 @@ public class Indicator {
     private TrueRangeIndicator trueRangeIndicator;
 
 
+    public static Indicator calculateDummy(CandleItem item) {
+        log.info("Calculate indicators for initial candleitem / dummy value {}", item);
+       return Indicator.builder()
+                .averageIndicator(new AverageComputation(item).calculateDummy())
+                .trueRangeIndicator(new TrueRangeComputation().calculateDummy())
+                .rsiIndicator(new RelativeStrengthComputation(item).calculateDummy())
+                .build();
 
-    public static Indicator calculate(List<CandleItem> history, CandleItem item) {
-        Indicator ni = new Indicator();
-        if (history.size() == 0)
-            return ni;
-
-        CandleItem itemPrev = null;
-        itemPrev = history.get(history.size() - 1);
-
-        ni.setAverageIndicator(new AverageComputation(history, item, history.get(history.size()-1)).calculate());
-        ni.setTrueRangeIndicator(new TrueRangeComputation(item, itemPrev, history).calculate());
-        ni.setRsiIndicator(new RelativeStrengthComputation(history, item).calculate());
-//        log.info("Calculated indicators: {}", ni);
-        return ni;
     }
 
-
-
-
-
+    public static Indicator calculate(List<CandleItem> history, CandleItem item) {
+        CandleItem itemPrev = null;
+        itemPrev = history.get(history.size() - 1);
+        return Indicator.builder()
+                .averageIndicator(new AverageComputation(history, item, history.get(history.size() - 1)).calculate())
+                .trueRangeIndicator(new TrueRangeComputation(item, itemPrev, history).calculate())
+                .rsiIndicator(new RelativeStrengthComputation(history, item).calculate())
+                .build();
+    }
 
 
     public void nicePrintMovingAverages() {
@@ -63,7 +63,6 @@ public class Indicator {
         }
         log.info("Exp MA Printout END ####");
     }
-
 
 
     public void nicePrintMacdATR() {

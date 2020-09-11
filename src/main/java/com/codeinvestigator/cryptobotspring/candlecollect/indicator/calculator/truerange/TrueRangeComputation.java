@@ -17,6 +17,13 @@ public class TrueRangeComputation {
     private final CandleItem itemPrev;
     private BigDecimal currentTrueRange;
     private final List<CandleItem> history;
+
+    public TrueRangeComputation() {
+        item = null;
+        itemPrev = null;
+        history = null;
+    }
+
     private BigDecimal calculateAverageTrueRange() {
 
         if (history.size() < 14)
@@ -63,5 +70,12 @@ public class TrueRangeComputation {
                 .max(highMinusPreviousClose)
                 .max(lowMinusPreviousClose);
         return currentTrueRange;
+    }
+
+    public TrueRangeIndicator calculateDummy() {
+        return TrueRangeIndicator.builder()
+                .trueRange(BigDecimal.ZERO)
+                .averageTrueRange(BigDecimal.ZERO)
+                .build();
     }
 }

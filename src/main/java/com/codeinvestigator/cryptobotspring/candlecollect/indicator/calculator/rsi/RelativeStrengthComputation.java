@@ -15,6 +15,11 @@ public class RelativeStrengthComputation {
     BigDecimal avgGain = BigDecimal.ZERO;
     BigDecimal avgLoose = BigDecimal.ZERO;
 
+    public RelativeStrengthComputation(CandleItem item) {
+        this.current = item;
+        this.history = null;
+    }
+
     private CandleItem previousCandle() {
         return history.get(history.size() - 1);
     }
@@ -26,6 +31,7 @@ public class RelativeStrengthComputation {
     private boolean isInitial() {
         return (history.size() == 14);
     }
+
     public RSIIndicator calculate() {
         if (beforeInitial())
             return calculateBefore();
@@ -54,7 +60,7 @@ public class RelativeStrengthComputation {
 
     private void avgGainLooseCalc() {
 
-        avgGain= previousCandle().getIndicator().getRsiIndicator()
+        avgGain = previousCandle().getIndicator().getRsiIndicator()
                 .getAvgGain()
                 .multiply(BigDecimal.valueOf(13))
                 .add(current.gain())
@@ -80,5 +86,10 @@ public class RelativeStrengthComputation {
             return new RSIIndicator(rsi, RSIState.INITIAL, avgGain, avgLoose);
         else
             return new RSIIndicator(rsi, RSIState.AFTER_INITIAL, avgGain, avgLoose);
+    }
+
+    public RSIIndicator calculateDummy() {
+        return new RSIIndicator(BigDecimal.valueOf(50), RSIState.BEFORE_INITIAL, BigDecimal.ZERO,
+                BigDecimal.ZERO);
     }
 }

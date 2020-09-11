@@ -21,9 +21,18 @@ public class AverageComputation {
     private final static List<Integer> EXPONENTIAL_MOVINGAVERAGE_PERIODS;
     static {
         MOVINGAVERAGE_PERIODS = List.of(7,12,20,26,50,99,200);
-        EXPONENTIAL_MOVINGAVERAGE_PERIODS = List.of(12,26);
+        EXPONENTIAL_MOVINGAVERAGE_PERIODS = List.of(7, 12,26);
     }
+
+    public AverageComputation(CandleItem item) {
+        this.item = item;
+        this.history = null;
+        this.itemPrev = null;
+    }
+
     public AverageIndicator calculate(){
+        if (itemPrev == null || history == null)
+            throw new IllegalStateException("It looks like this computatation is made to calculate the dummy / initial value.");
         return AverageIndicator.builder()
                 .movingAverages(calculateMovingAverages(history))
                 .movingAverageConvergenceDivergence(calculateMovingAverageConvergenceDivergence())
@@ -54,7 +63,10 @@ public class AverageComputation {
     }
 
     public BigDecimal calculateMovingAverageConvergenceDivergence() {
-        Map<Integer, BigDecimal> exponentialMovingAverages = item.getIndicator().getAverageIndicator().getExponentialMovingAverages();
+        Map<Integer, BigDecimal> exponentialMovingAverages = EXPONENTIAL_MOVINGAVERAGE_PERIODS.stream().
+                collect(
+                        Collectors.toMap(k -> k, v -> BigDecimal.ZERO)
+                );
         return exponentialMovingAverages.get(12).subtract(exponentialMovingAverages.get(26));
     }
 
@@ -87,4 +99,21 @@ public class AverageComputation {
         return exponentialMovingAverages;
     }
 
+    public AverageIndicator calculateDummy() {
+        return AverageIndicator.builder()
+                .exponentialMovingAverages(EXPONENTIAL_MOVINGAVERAGE_PERIODS
+                .stream()
+                .collect(Collectors.toMap(i -> i, i -> item.getClose()))
+        )
+                .movingAverages(
+                        MOVINGAVERAGE_PERIODS.stream().
+                                collect(
+                                        Collectors.toMap(k -> k, v -> BigDecimal.ZERO)
+                                )
+                )
+                .movingAverageConvergenceDivergence(
+                        BigDecimal.ZERO
+                )
+                .build();
+    }
 }
