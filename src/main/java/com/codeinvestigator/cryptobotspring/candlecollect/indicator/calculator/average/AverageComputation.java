@@ -1,9 +1,11 @@
 package com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average;
 
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Constants;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.scanner.Constant;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,10 +21,13 @@ public class AverageComputation {
     private final CandleItem itemPrev;
     private final static List<Integer> MOVINGAVERAGE_PERIODS;
     private final static List<Integer> EXPONENTIAL_MOVINGAVERAGE_PERIODS;
+    private Map<Integer, BigDecimal> exponentialMovingAveragesCurrent;
     static {
         MOVINGAVERAGE_PERIODS = List.of(7,12,20,26,50,99,200);
         EXPONENTIAL_MOVINGAVERAGE_PERIODS = List.of(7, 12,26);
     }
+
+    private BigDecimal macd12;
 
     public AverageComputation(CandleItem item) {
         this.item = item;
@@ -35,9 +40,9 @@ public class AverageComputation {
             throw new IllegalStateException("It looks like this computatation is made to calculate the dummy / initial value.");
         return AverageIndicator.builder()
                 .movingAverages(calculateMovingAverages(history))
-                .movingAverageConvergenceDivergence(calculateMovingAverageConvergenceDivergence())
                 .exponentialMovingAverages(calculateExponentialMovingAverages(
                         history, item, itemPrev))
+                .movingAverageConvergenceDivergence(calculateMovingAverageConvergenceDivergence())
                 .build();
     }
 
@@ -63,18 +68,20 @@ public class AverageComputation {
     }
 
     public BigDecimal calculateMovingAverageConvergenceDivergence() {
-        Map<Integer, BigDecimal> exponentialMovingAverages = EXPONENTIAL_MOVINGAVERAGE_PERIODS.stream().
-                collect(
-                        Collectors.toMap(k -> k, v -> BigDecimal.ZERO)
-                );
-        return exponentialMovingAverages.get(12).subtract(exponentialMovingAverages.get(26));
+        this.macd12 = exponentialMovingAveragesCurrent.get(12).subtract(exponentialMovingAveragesCurrent.get(26));
+        return macd12;
+    }
+
+    public BigDecimal calculateMacdEma9() {
+        BigDecimal signalline = this.macd12;
+        return signalline;
     }
 
     public Map<Integer, BigDecimal> calculateExponentialMovingAverages(
                                                                        List<CandleItem> history, CandleItem item, CandleItem prev) {
         Map<Integer, BigDecimal> exponentialMovingAverages = EXPONENTIAL_MOVINGAVERAGE_PERIODS
                 .stream()
-                .collect(Collectors.toMap(i -> i, i -> BigDecimal.ZERO));
+                .collect(Collectors.toMap(i -> i, i -> item.getClose()));
 //        Initial SMA: 10-period sum / 10
 //        Multiplier: (2 / (Time periods + 1) ) = (2 / (10 + 1) ) = 0.1818 (18.18%)
 //        EMA: {Close - EMA(previous day)} x multiplier + EMA(previous day).
@@ -84,18 +91,17 @@ public class AverageComputation {
 
         for (Integer key : EXPONENTIAL_MOVINGAVERAGE_PERIODS) {
             BigDecimal prevEMA = prev.getIndicator().getAverageIndicator().getExponentialMovingAverages().get(key);
-            if (prevEMA.equals(BigDecimal.ZERO))
+            if (prevEMA.equals(BigDecimal.ZERO) || history.size() <= key)
                 prevEMA = prev.getIndicator().getAverageIndicator().getMovingAverages().get(key);
-            BigDecimal timeplusone = BigDecimal.valueOf(key, Indicator.BD_SCALE)
-                    .add(BigDecimal.valueOf(1, Indicator.BD_SCALE));
-            BigDecimal multiplier = BigDecimal.valueOf(2, Indicator.BD_SCALE)
-                    .divide(timeplusone, Indicator.BD_SCALE, RoundingMode.HALF_UP);
-            exponentialMovingAverages.put(key,
-                    item.getClose()
-                            .subtract(prevEMA)
-                            .multiply(multiplier)
-                            .add(prevEMA));
+            BigDecimal timeplusone = BigDecimal.valueOf(key).add(BigDecimal.ONE);
+            BigDecimal multiplier = BigDecimal.valueOf(2)
+                    .divide(timeplusone, Constants.MATHCONTEXT);
+            BigDecimal priceXmultiplier = multiplier.multiply(item.getClose(), Constants.MATHCONTEXT);
+            BigDecimal prevXmultiplier = BigDecimal.ONE.subtract(multiplier).multiply(prevEMA, Constants.MATHCONTEXT);
+            BigDecimal ema = priceXmultiplier.add(prevXmultiplier);
+            exponentialMovingAverages.put(key, ema);
         }
+        exponentialMovingAveragesCurrent = exponentialMovingAverages;
         return exponentialMovingAverages;
     }
 
@@ -108,7 +114,7 @@ public class AverageComputation {
                 .movingAverages(
                         MOVINGAVERAGE_PERIODS.stream().
                                 collect(
-                                        Collectors.toMap(k -> k, v -> BigDecimal.ZERO)
+                                        Collectors.toMap(k -> k, v -> item.getClose())
                                 )
                 )
                 .movingAverageConvergenceDivergence(
