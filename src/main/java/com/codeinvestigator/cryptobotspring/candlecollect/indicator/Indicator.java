@@ -3,6 +3,7 @@ package com.codeinvestigator.cryptobotspring.candlecollect.indicator;
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average.AverageComputation;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average.AverageIndicator;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.average.MacdIndicator;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.rsi.RelativeStrengthComputation;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeComputation;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.truerange.TrueRangeIndicator;
@@ -22,6 +23,7 @@ public class Indicator {
     public static final int BD_SCALE = 6;
     private RSIIndicator rsiIndicator;
     private AverageIndicator averageIndicator;
+    private MacdIndicator macdIndicator;
     private TrueRangeIndicator trueRangeIndicator;
 
 

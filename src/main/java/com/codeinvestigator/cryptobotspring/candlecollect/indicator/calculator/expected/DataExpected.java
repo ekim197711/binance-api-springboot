@@ -1,4 +1,4 @@
-package com.codeinvestigator.cryptobotspring.candlecollect.indicator;
+package com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.expected;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

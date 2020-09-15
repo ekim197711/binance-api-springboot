@@ -14,7 +14,8 @@ import java.util.Map;
 public class AverageIndicator {
 
     private BigDecimal movingAverageConvergenceDivergence;
-    private BigDecimal macdema9;
+    private BigDecimal macdEma9;
+    private BigDecimal smaMacd9;
     private Map<Integer, BigDecimal> movingAverages;
     private Map<Integer, BigDecimal> exponentialMovingAverages;
 }

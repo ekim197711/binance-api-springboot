@@ -4,15 +4,11 @@ import com.codeinvestigator.cryptobotspring.candlecollect.CandleItem;
 import com.codeinvestigator.cryptobotspring.candlecollect.CandleItemRepository;
 import com.codeinvestigator.cryptobotspring.candlecollect.Interval;
 import com.codeinvestigator.cryptobotspring.candlecollect.Symbol;
-import org.junit.ClassRule;
+import com.codeinvestigator.cryptobotspring.candlecollect.indicator.calculator.expected.DataExpected;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.testcontainers.containers.DockerComposeContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
 
-import java.io.File;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;

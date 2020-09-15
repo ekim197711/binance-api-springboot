@@ -5,7 +5,6 @@ import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Constants;
 import com.codeinvestigator.cryptobotspring.candlecollect.indicator.Indicator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.scanner.Constant;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -21,7 +20,7 @@ public class AverageComputation {
     private final CandleItem itemPrev;
     private final static List<Integer> MOVINGAVERAGE_PERIODS;
     private final static List<Integer> EXPONENTIAL_MOVINGAVERAGE_PERIODS;
-    private Map<Integer, BigDecimal> exponentialMovingAveragesCurrent;
+
     static {
         MOVINGAVERAGE_PERIODS = List.of(7,12,20,26,50,99,200);
         EXPONENTIAL_MOVINGAVERAGE_PERIODS = List.of(7, 12,26);
@@ -42,7 +41,6 @@ public class AverageComputation {
                 .movingAverages(calculateMovingAverages(history))
                 .exponentialMovingAverages(calculateExponentialMovingAverages(
                         history, item, itemPrev))
-                .movingAverageConvergenceDivergence(calculateMovingAverageConvergenceDivergence())
                 .build();
     }
 
@@ -67,15 +65,6 @@ public class AverageComputation {
         return movingAverages;
     }
 
-    public BigDecimal calculateMovingAverageConvergenceDivergence() {
-        this.macd12 = exponentialMovingAveragesCurrent.get(12).subtract(exponentialMovingAveragesCurrent.get(26));
-        return macd12;
-    }
-
-    public BigDecimal calculateMacdEma9() {
-        BigDecimal signalline = this.macd12;
-        return signalline;
-    }
 
     public Map<Integer, BigDecimal> calculateExponentialMovingAverages(
                                                                        List<CandleItem> history, CandleItem item, CandleItem prev) {
@@ -101,7 +90,6 @@ public class AverageComputation {
             BigDecimal ema = priceXmultiplier.add(prevXmultiplier);
             exponentialMovingAverages.put(key, ema);
         }
-        exponentialMovingAveragesCurrent = exponentialMovingAverages;
         return exponentialMovingAverages;
     }
 
